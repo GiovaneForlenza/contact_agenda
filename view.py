@@ -111,12 +111,25 @@ class View(tk.Tk):
             'A1A-2B2'
         ]
 
-        entries = self._get_entries_from_frame()
+        entries = self.get_entries_from_frame()
+        count = 0
+        for i in entries:
+            # value = StringVar()
+            # value.set(info[int(i)])
+            i.insert(0,str(info[count]))
+            count+=1
 
-
-    def _get_entries_from_frame(self):
+    def get_entries_from_frame(self):
         children_widgets = self.main_form.winfo_children()
         list = []
         for child_widget in children_widgets:
             if child_widget.winfo_class() == 'Entry':
-                print(child_widget.get())
+                list.append(child_widget)
+        return list
+
+    def get_info_in_entries(self, list):
+        values = []
+        for child_widget in list:
+            if child_widget.winfo_class() == 'Entry':
+                values.append(child_widget.get())
+        return values
