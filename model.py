@@ -14,6 +14,8 @@ class Model():
         print(btn)
         if btn == 'Add contact':
             self._add_new_contact()
+        if btn == 'Show all contacts':
+            self._get_everything_from_all_contacts()
 
     def _connect_db(self):
         self.conn = sqlite3.connect('address_book.db')
@@ -32,7 +34,7 @@ class Model():
         self.c = self._get_cursor()
 
         self.c.execute(
-            f'''CREATE TABLE IF NOT EXISTS {self.table_name}(
+            f'''CREATE TABLE IF NOT EXISTS {self.table_name}(                
                 first_name text,
                 last_name text,
                 phone_number text,
@@ -63,10 +65,10 @@ class Model():
                     'l_name': entry_values[1],
                     'phone_number': entry_values[2],
                     'email': entry_values[3],
-                    'address': entry_values[2],
-                    'city': entry_values[4],
-                    'state': entry_values[5],
-                    'zip_code': entry_values[6]
+                    'address': entry_values[4],
+                    'city': entry_values[5],
+                    'state': entry_values[6],
+                    'zip_code': entry_values[7]
                 })
             self.controller.show_messagebox('info', 'Contact Added', 'The contact was added '
                                                                      'successfully.')
@@ -78,3 +80,12 @@ class Model():
             print(e)
 
         self._commit_and_close_db()
+
+    def _get_everything_from_all_contacts(self):
+        # print('aa')
+        self.conn = self._connect_db()
+        self.c = self._get_cursor()
+        self.c.execute(f'SELECT * FROM {self.table_name}')
+        records = self.c.fetchall()
+        self._commit_and_close_db()
+        self.controller.show_everything_from_all_contacts(records)

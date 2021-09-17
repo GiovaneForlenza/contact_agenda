@@ -20,6 +20,8 @@ class Controller:
     def show_messagebox(self, type, title, message):
         self.view.create_messagebox(type, title, message)
 
+    def show_everything_from_all_contacts(self, records):
+        self.view.show_everything_from_all_contacts(records)
 
 if __name__ == '__main__':
     agenda = Controller()

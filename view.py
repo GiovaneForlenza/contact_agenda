@@ -98,7 +98,6 @@ class View(tk.Tk):
             lambda button=caption: self.controller.on_btn_click(button))
             btn.pack(padx=self.PADDING / 2, pady=self.PADDING)
 
-
     def _fill_entry_info(self):
         info = [
             'Giovane',
@@ -116,8 +115,8 @@ class View(tk.Tk):
         for i in entries:
             # value = StringVar()
             # value.set(info[int(i)])
-            i.insert(0,str(info[count]))
-            count+=1
+            i.insert(0, str(info[count]))
+            count += 1
 
     def get_entries_from_frame(self):
         children_widgets = self.main_form.winfo_children()
@@ -137,9 +136,43 @@ class View(tk.Tk):
     def create_messagebox(self, type, title, message):
         if type == 'info':
             messagebox.showinfo(title, message)
-        elif type=='error':
+        elif type == 'error':
             messagebox.showerror(title, message)
-        elif type=='warning':
+        elif type == 'warning':
             messagebox.showwarning(title, message)
-        elif type=='yesno':
+        elif type == 'yesno':
             messagebox.askyesno(title, message)
+
+    def show_everything_from_all_contacts(self, records):
+        grid_padding = 5
+        all_contacts_window = Toplevel()
+        all_contacts_window.title('All Contacts')
+        all_contacts_frame = LabelFrame(all_contacts_window, text='All Contacts')
+        all_contacts_frame.pack(padx=self.PADDING, pady=self.PADDING)
+        columns = ['Full Name', 'Phone', 'Email', 'Address', 'City', 'State', 'Postal Code']
+        grid_row = 0
+        for column in columns:
+            label = Label(all_contacts_frame, text=column)
+            label.grid(sticky="W", row=0, column=grid_row, ipadx=50)
+            grid_row += 1
+        Label(all_contacts_frame, text='\n').grid(row=1, column=0)
+
+        grid_row = 1
+        for record in records:
+            for i in record:
+                if record.index(i) == 0:
+                    full_name = record[1] + ', ' + record[0]
+                    label = Label(all_contacts_frame, text=str(full_name), cursor='hand2',anchor=W)
+                    label.grid(row=grid_row, column=record.index(i), padx=grid_padding,
+                               pady=grid_padding)
+                    #Makes the label clickable for further requests
+                    # label.bind('<Button-1>', lambda e:print('aaa'))
+                elif record.index(i) != 1:
+                    grid_column = record.index(i)
+                    if grid_column != 0:
+                        grid_column -= 1
+                    Label(all_contacts_frame, text=i, anchor=W).grid(row=grid_row,
+                                                                     column=grid_column,
+                                                                     padx=grid_padding,
+                                                                     pady=grid_padding)
+            grid_row += 1
