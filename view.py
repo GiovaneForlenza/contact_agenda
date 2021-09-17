@@ -133,3 +133,13 @@ class View(tk.Tk):
             if child_widget.winfo_class() == 'Entry':
                 values.append(child_widget.get())
         return values
+
+    def create_messagebox(self, type, title, message):
+        if type == 'info':
+            messagebox.showinfo(title, message)
+        elif type=='error':
+            messagebox.showerror(title, message)
+        elif type=='warning':
+            messagebox.showwarning(title, message)
+        elif type=='yesno':
+            messagebox.askyesno(title, message)

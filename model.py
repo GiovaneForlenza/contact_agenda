@@ -68,10 +68,13 @@ class Model():
                     'state': entry_values[5],
                     'zip_code': entry_values[6]
                 })
-            # messagebox.showinfo('Contact added', 'The contact was added successfully')
+            self.controller.show_messagebox('info', 'Contact Added', 'The contact was added '
+                                                                     'successfully.')
+
         except Exception as e:
-            # messagebox.showerror('Something went wrong',
-            #                      'Something went wrong. Contact was not added')
+            self.controller.show_messagebox('error', 'Something Went wrong', 'Something went '
+                                                                             'wrong while trying '
+                                                                             'to add the contact.')
             print(e)
 
         self._commit_and_close_db()

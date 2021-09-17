@@ -17,6 +17,10 @@ class Controller:
         list = self.view.get_entries_from_frame()
         return self.view.get_info_in_entries(list)
 
+    def show_messagebox(self, type, title, message):
+        self.view.create_messagebox(type, title, message)
+
+
 if __name__ == '__main__':
     agenda = Controller()
     agenda.main()
