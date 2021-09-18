@@ -11,11 +11,13 @@ class Model():
         self._create_table()
 
     def btn_pressed(self, btn):
-        print(btn)
+        # print(btn)
         if btn == 'Add contact':
             self._add_new_contact()
-        if btn == 'Show all contacts':
-            self._get_everything_from_all_contacts()
+        # if btn == 'Show all contacts':
+        #     self.get_everything_from_all_contacts()
+        elif btn == 'DELETE EVERYTHING':
+            self._delete_all_contacts()
 
     def _connect_db(self):
         self.conn = sqlite3.connect('address_book.db')
@@ -51,7 +53,7 @@ class Model():
 
     def _add_new_contact(self):
         entry_values = self.controller.get_entry_values()
-        print(entry_values)
+        # print(entry_values)
         self.conn = self._connect_db()
         self.c = self._get_cursor()
         try:
@@ -80,8 +82,9 @@ class Model():
             print(e)
 
         self._commit_and_close_db()
+        self.controller.get_everything_from_all_contacts()
 
-    def _get_everything_from_all_contacts(self):
+    def get_everything_from_all_contacts(self):
         # print('aa')
         self.conn = self._connect_db()
         self.c = self._get_cursor()
@@ -89,3 +92,10 @@ class Model():
         records = self.c.fetchall()
         self._commit_and_close_db()
         self.controller.show_everything_from_all_contacts(records)
+
+    def _delete_all_contacts(self):
+        self.conn = self._connect_db()
+        self.c = self._get_cursor()
+        self.c.execute(f'DELETE FROM {self.table_name}')
+        self._commit_and_close_db()
+        self.get_everything_from_all_contacts()

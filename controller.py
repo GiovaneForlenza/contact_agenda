@@ -4,8 +4,9 @@ from view import View
 
 class Controller:
     def __init__(self):
-        self.view = View(self)
         self.model = Model(self)
+        self.view = View(self)
+        self.get_everything_from_all_contacts()
 
     def main(self):
         self.view.main()
@@ -22,6 +23,9 @@ class Controller:
 
     def show_everything_from_all_contacts(self, records):
         self.view.show_everything_from_all_contacts(records)
+
+    def get_everything_from_all_contacts(self):
+        self.model.get_everything_from_all_contacts()
 
 if __name__ == '__main__':
     agenda = Controller()
