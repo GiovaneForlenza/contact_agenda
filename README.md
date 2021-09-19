@@ -16,6 +16,7 @@ Every contact has the following information
 
 # After adding a contact
 A list with all the contacts will be displayed in the main window. If there are no contacts in the DB, a 'No contacts were found' label will appear instead
+
 The user can Update or Delete each contact by clicking in the 'Update a Contact' button
 
 # How to Update or Delete a contact
