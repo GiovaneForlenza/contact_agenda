@@ -1,5 +1,6 @@
 # Contact Agenda
 A simple way to store information about your contacts
+This project was developed in 3 days using only Python, Tkinter for the GUI and SQLite for the DB
 
 # Contact Information
 Every contact has the following information
