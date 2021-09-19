@@ -7,10 +7,8 @@ import tkinter as tk
 class View(tk.Tk):
     PADDING = 10
     MAX_BUTTON_PER_ROW = 4
-    button_captions = [  # 'Show all contacts',
-        'Update a contact', 'DELETE EVERYTHING']
-    entry_captions = [  # 'Contact ID',
-        'First Name', 'Last Name', 'Phone Number', 'Email', 'Address', 'City', 'Province', 'Zip Code']
+    button_captions = ['Update a Contact', 'DELETE EVERYTHING']
+    entry_captions = ['First Name', 'Last Name', 'Phone Number', 'Email', 'Address', 'City', 'Province', 'Zip Code']
 
     def __init__(self, controller):
         self.controller = controller
@@ -33,7 +31,6 @@ class View(tk.Tk):
     def _create_entries(self, frame, step):
         row = 0
         column = 0
-        columnspan = 2
         for caption in self.entry_captions:
             entry_name = StringVar()
             entry_name.set(caption)
@@ -42,10 +39,17 @@ class View(tk.Tk):
             entry = Entry(frame)
             entry.grid(row=row, column=column + 1, padx=self.PADDING, pady=self.PADDING)
             row += 2
-        btn = Button(frame, text='Add contact' if step == 0 else 'Update Contact', command=lambda
-            button='Add contact' if step == 0 else 'Update Contact': self.controller.on_btn_click(button))
+        btn = Button(frame, text='Add Contact' if step == 0 else 'Update Contact', command=lambda
+            button='Add Contact' if step == 0 else 'Update Contact': self.controller.on_btn_click(button))
 
-        btn.grid(row=row + 1, column=column, columnspan=columnspan, padx=self.PADDING, pady=self.PADDING)
+        btn.grid(row=row + 1, column=column, padx=self.PADDING, pady=self.PADDING)
+        if step == 1:
+            btn_delete_contact = Button(frame, text='Delete Contact',
+                                        command=lambda button='Delete Contact': self.controller.on_btn_click(button))
+            btn_delete_contact.grid(row=row + 1, column=column + 1, padx=self.PADDING, pady=self.PADDING)
+            btn_cancel_contact_update = Button(frame, text='Cancel',
+                                               command=lambda button='Cancel': self.controller.on_btn_click(button))
+            btn_cancel_contact_update.grid(row=row + 2, column=0, columnspan=2, padx=self.PADDING, pady=self.PADDING)
 
     def _create_update_window(self):
         self.update_window = Toplevel()
@@ -60,13 +64,6 @@ class View(tk.Tk):
             btn = Button(frame, text=caption, command=lambda button=caption: self.controller.on_btn_click(button))
             btn.pack(padx=self.PADDING, pady=self.PADDING)
 
-    def _get_entry_texts(self):
-        _list = self.main_form.winfo_children()
-
-        for item in _list:
-            if item.winfo_children():
-                pass  # print(item.winfo_children())
-
     def _create_main_form(self):
         self.main_form = LabelFrame(self.main_frame, text='Contact Info', width=500)
         self.main_form.pack(side='left', padx=self.PADDING, pady=self.PADDING)
@@ -75,7 +72,7 @@ class View(tk.Tk):
     def _create_all_contacts_frame(self):
         self.all_contacts_frame = LabelFrame(self.main_frame, text='All Contacts')
         self.all_contacts_frame.pack(side='right', padx=self.PADDING, pady=self.PADDING, ipadx=self.PADDING,
-                                     ipady=self.PADDING)  # self._make_entries(self.main_form)
+                                     ipady=self.PADDING)
 
     def _create_other_commands_form(self):
         self.other_commands_form = LabelFrame(self.main_frame, text='Other Commands', width=500)
@@ -126,20 +123,19 @@ class View(tk.Tk):
         elif type == 'warning':
             messagebox.showwarning(title, message)
         elif type == 'yesno':
-            messagebox.askyesno(title, message)
+            answer = messagebox.askyesno(title, message)
+            return answer
 
     def show_everything_from_all_contacts(self, records):
         self.clear_all_contacts_frame()
         if len(records):
             all_contacts_info_frame = Frame(self.all_contacts_frame)
             all_contacts_info_frame.pack(padx=self.PADDING, pady=self.PADDING)
-            # all_contacts_info_frame.columnconfigure(0, weight=1)
-            # all_contacts_info_frame.columnconfigure(1, weight=2)
-            # all_contacts_info_frame.columnconfigure(2, weight=2)
             grid_padding = 5
             columns = ['Contact ID', 'Full Name', 'Phone', 'Email', 'Address', 'City', 'State', 'Postal Code']
             grid_column = 0
             grid_row = 0
+
             # Adds the 'Header' for the form
             for column in columns:
                 label = Label(all_contacts_info_frame, text=column, bg='red')
@@ -181,16 +177,9 @@ class View(tk.Tk):
             if child_widget.winfo_class() == 'Frame':
                 child_widget.pack_forget()
 
-    # def record_row_clicked(self, label, counter):
-    #     print(str(counter))
-    #     children_widgets = self.all_contacts_frame.winfo_children()
-    #     for child_widget in children_widgets:
-    #         child = child_widget.winfo_children()
-    #         print(child[counter]['text'])
-    #         # for child in child_widget:
-    #     print('----\n')
-    #     # if child_widget.winfo_class() == 'Frame':
-    #     # child_widget.pack_forget()
+    def close_update_window(self):
+        self.update_window.destroy()
+        self.update_window.update()
 
     def whats_contact_id(self):
         id_update = simpledialog.askstring(title="Update a record", prompt="What's the ID you'd like to update?")
@@ -202,5 +191,4 @@ class View(tk.Tk):
         self._create_entries(self.update_frame, 1)
         self._fill_entry_info(self.update_frame, record)
         self.stored_id_to_update = record[0][0]
-        # print(self.stored_id_to_update)
         print(record)

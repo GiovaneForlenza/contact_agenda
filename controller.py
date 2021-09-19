@@ -14,15 +14,15 @@ class Controller:
     def on_btn_click(self, btn):
         self.model.btn_pressed(btn)
 
-    def get_entry_values(self):
-        list = self.view.get_entries_from_frame()
+    def get_entry_values(self, frame):
+        list = self.view.get_entries_from_frame(frame)
         return self.view.get_info_in_entries(list)
 
     def show_messagebox(self, type, title, message):
-        self.view.create_messagebox(type, title, message)
+        return self.view.create_messagebox(type, title, message)
 
-    # def show_everything_from_all_contacts(self, records):
-    #     self.view.show_everything_from_all_contacts(records)
+    def close_update_window(self):
+        self.view.close_update_window()
 
     def get_everything_from_all_contacts(self):
         records = self.model.get_everything_from_all_contacts()
@@ -36,6 +36,12 @@ class Controller:
 
     def get_stored_id_to_update(self):
         return self.view.stored_id_to_update
+
+    def get_main_form(self):
+        return self.view.main_form
+
+    def get_update_frame(self):
+        return self.view.update_frame
 
 
 if __name__ == '__main__':
