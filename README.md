@@ -33,3 +33,10 @@ The user can Update or Delete each contact by clicking in the 'Update a Contact'
 IF YOU PRESS THE 'DELETE ALL' BUTTON, THE DB WILL BE ERASED
 
 
+# Future Features
+User will be able to see a history of the alterations made in a contact
+It will be possible to reverse the changes back to any previous change made
+The current idea is that the whole contact will be updated at once, but in the future just one piece of info might be able to be updated at once
+
+
+
