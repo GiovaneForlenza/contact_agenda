@@ -6,6 +6,7 @@ class Model():
     def __init__(self, controller):
 
         self.table_name = 'contacts'
+        self.table_name_backup = 'contacts_backup'
 
         self.controller = controller
         self.conn = self._connect_db()
@@ -29,6 +30,8 @@ class Model():
             self._delete_contact()
         elif btn == 'Cancel':
             self._close_update_window()
+        elif btn == 'See History':
+            self._get_update_history(self.contact_id)
 
     def _connect_db(self):
         self.conn = sqlite3.connect('address_book.db')
@@ -44,6 +47,7 @@ class Model():
 
     def _create_table(self):
         self._execute_sql_command('create')
+        self._execute_sql_command('create_backup')
 
     def _add_new_contact(self):
         self.entry_values = self.controller.get_entry_values(self.controller.get_main_form())
@@ -60,6 +64,10 @@ class Model():
     def _delete_all_contacts(self):
         self._execute_sql_command('delete_everything')
         self.controller.get_everything_from_all_contacts()
+
+    def _get_update_history(self, id):
+        records = self._execute_sql_command('get_update_history', id)
+        self.controller.show_update_history_window(records)
 
     '''
     This method has 2 states
@@ -86,8 +94,9 @@ class Model():
                                                     self.contact_id) + '"')
         else:
             answer = self._should_proceed('update')
-            self.entry_values = self.controller.get_entry_values(self.controller.get_update_frame())
             if answer:
+                self.entry_values = self.controller.get_entry_values(self.controller.get_update_frame())
+                self._execute_sql_command('add_backup')
                 self._execute_sql_command('update')
 
     def _delete_contact(self):
@@ -117,6 +126,19 @@ class Model():
                 province text,
                 zip_code text
             )'''
+        elif command == 'create_backup':
+            cmd_to_execute = f'''CREATE TABLE IF NOT EXISTS {self.table_name_backup}(                                                 
+                            contact_id int,
+                            first_name text,
+                            last_name text,
+                            phone_number text,
+                            email text,
+                            address text,
+                            city text,
+                            province text,
+                            zip_code text,                             
+                            FOREIGN KEY(contact_id) REFERENCES contacts(rowid)
+                        )'''
         elif command == 'add':
             message_title = 'Contact Added'
             message_title_fail = 'Something Went wrong'
@@ -146,6 +168,17 @@ class Model():
                                                 province = '{self.entry_values[6]}',
                                                 zip_code = '{self.entry_values[7]}'
                                             WHERE rowid = {self.contact_id}"""
+        elif command == 'add_backup':
+            cmd_to_execute = f'''INSERT INTO {self.table_name_backup} VALUES(
+                                            {self.contact_id},
+                                            '{self.record[0][1]}',
+                                            '{self.record[0][2]}',
+                                            '{self.record[0][3]}',
+                                            '{self.record[0][4]}',
+                                            '{self.record[0][5]}',
+                                            '{self.record[0][6]}',
+                                            '{self.record[0][7]}',
+                                            '{self.record[0][8]}')'''
         elif command == 'delete':
             message_title = 'Contact Deleted'
             message_title_fail = 'Contact not Deleted'
@@ -156,6 +189,8 @@ class Model():
             cmd_to_execute = f'DELETE FROM {self.table_name}'
         elif command == 'get_everything_from_all':
             cmd_to_execute = f'SELECT oid, * FROM {self.table_name}'
+        elif command == 'get_update_history':
+            cmd_to_execute = f'SELECT * FROM {self.table_name_backup}'
         elif command == 'get_everything_from_one':
             cmd_to_execute = f'SELECT oid, * FROM {self.table_name} WHERE ROWID = {id}'
 
@@ -166,7 +201,7 @@ class Model():
             self.c.execute(cmd_to_execute)
 
             # Returns a list with all the information either from all the rows or from a specific one
-            if command == 'get_everything_from_all' or command == 'get_everything_from_one':
+            if command == 'get_everything_from_all' or command == 'get_everything_from_one' or command == 'get_update_history':
                 return self.c.fetchall()
 
             self._commit_and_close_db()
@@ -189,9 +224,8 @@ class Model():
             if message_text_fail != '' and message_title_fail != '':
                 self.controller.show_messagebox(message_type, message_title_fail, message_text_fail)
 
-
-    #Asks the user if they would like to Update/Delete the contact
-    #This is used as an extra layer of protection from mistakes, giving the user a chance to change their minds
+    # Asks the user if they would like to Update/Delete the contact
+    # This is used as an extra layer of protection from mistakes, giving the user a chance to change their minds
     def _should_proceed(self, type):
         type_title = 'Update' if type == 'update' else 'Delete'
         type_text = 'update' if type == 'update' else 'delete'
@@ -203,8 +237,8 @@ class Model():
             type_text += 'd' if type == 'update' else 'ed'
             self.controller.show_messagebox('info', f'Contact was not {type_text}', f'The contact was not {type_text}!')
 
-    #Searched in the DB for the given ID
-    #Returns True if it finds the ID, returns False if the ID doesn't exist in the db
+    # Searched in the DB for the given ID
+    # Returns True if it finds the ID, returns False if the ID doesn't exist in the db
     def _id_exists(self, id):
         records = self.get_everything_from_all_contacts()
         found = False

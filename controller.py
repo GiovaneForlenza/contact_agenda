@@ -6,6 +6,7 @@ class Controller:
     def __init__(self):
         self.model = Model(self)
         self.view = View(self)
+
         self.get_everything_from_all_contacts()
 
     def main(self):
@@ -33,6 +34,9 @@ class Controller:
 
     def show_update_window(self, record):
         self.view.show_update_window(record)
+
+    def show_update_history_window(self, records):
+        self.view.show_update_history_window(records)
 
     def get_stored_id_to_update(self):
         return self.view.stored_id_to_update

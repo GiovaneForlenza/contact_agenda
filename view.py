@@ -49,15 +49,43 @@ class View(tk.Tk):
             btn_delete_contact.grid(row=row + 1, column=column + 1, padx=self.PADDING, pady=self.PADDING)
             btn_cancel_contact_update = Button(frame, text='Cancel',
                                                command=lambda button='Cancel': self.controller.on_btn_click(button))
-            btn_cancel_contact_update.grid(row=row + 2, column=0, columnspan=2, padx=self.PADDING, pady=self.PADDING)
+            btn_cancel_contact_update.grid(row=row + 2, column=1, padx=self.PADDING, pady=self.PADDING)
+            btn_see_contact_history = Button(frame, text='See Update History',
+                                             command=lambda button='See History': self.controller.on_btn_click(button))
+            btn_see_contact_history.grid(row=row + 2, column=0, padx=self.PADDING, pady=self.PADDING)
 
     def _create_update_window(self):
-        self.update_window = Toplevel()
-        self.update_window.title('Contact Update')
+        self._create_window('update')
+
+    def _create_update_history_window(self):
+        self._create_window('update_history')
+
+    def _create_window(self, type):
+        if type == 'main':
+            self.main_form = LabelFrame(self.main_frame, text='Contact Info', width=500)
+            self.main_form.pack(side='left', padx=self.PADDING, pady=self.PADDING)
+            self._create_entries(self.main_form, 0)
+        elif type == 'update':
+            self.update_window = Toplevel()
+            self.update_window.title('Contact Update')
+        else:
+            self.update_history_window = Toplevel()
+            self.update_history_window.title('Contact Update History')
 
     def _create_update_frame(self):
-        self.update_frame = LabelFrame(self.update_window, text='Contact Update')
-        self.update_frame.pack(padx=self.PADDING, pady=self.PADDING)
+        self._create_frame('update')
+
+    def _create_frame(self, type):
+        if type == 'update':
+            self.update_frame = LabelFrame(self.update_window, text='Contact Update')
+            self.update_frame.pack(padx=self.PADDING, pady=self.PADDING)
+        elif type == 'update_history':
+            self.update_history_frame = LabelFrame(self.update_window, text='Contact Update History')
+            self.update_history_frame.pack(padx=self.PADDING, pady=self.PADDING)
+        elif type == 'all_contacts':
+            self.all_contacts_frame = LabelFrame(self.main_frame, text='All Contacts')
+            self.all_contacts_frame.pack(side='right', padx=self.PADDING, pady=self.PADDING, ipadx=self.PADDING,
+                                         ipady=self.PADDING)
 
     def _make_other_commands(self, frame):
         for caption in self.button_captions:
@@ -65,14 +93,10 @@ class View(tk.Tk):
             btn.pack(padx=self.PADDING, pady=self.PADDING)
 
     def _create_main_form(self):
-        self.main_form = LabelFrame(self.main_frame, text='Contact Info', width=500)
-        self.main_form.pack(side='left', padx=self.PADDING, pady=self.PADDING)
-        self._create_entries(self.main_form, 0)
+        self._create_window('main')
 
     def _create_all_contacts_frame(self):
-        self.all_contacts_frame = LabelFrame(self.main_frame, text='All Contacts')
-        self.all_contacts_frame.pack(side='right', padx=self.PADDING, pady=self.PADDING, ipadx=self.PADDING,
-                                     ipady=self.PADDING)
+        self._create_frame('all_contacts')
 
     def _create_other_commands_form(self):
         self.other_commands_form = LabelFrame(self.main_frame, text='Other Commands', width=500)
@@ -169,6 +193,10 @@ class View(tk.Tk):
             row_frame = Frame(self.all_contacts_frame)
             row_frame.pack()
             Label(row_frame, text='No contacts were found').grid(row=0, column=0, padx=self.PADDING, pady=self.PADDING)
+
+    def show_update_history_window(self, records):
+        self._create_window('update_history')
+        self._create_frame('update_history')
 
     def clear_all_contacts_frame(self):
         children_widgets = self.all_contacts_frame.winfo_children()
